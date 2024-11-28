@@ -1,0 +1,194 @@
+﻿<Window x:Class="JDock.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:JDock"
+        mc:Ignorable="d"
+        
+        WindowStyle="None"
+        WindowStartupLocation="Manual" 
+        Left="0" Top="50"
+        AllowsTransparency="True"
+        Background="#3333"
+        Height="500" 
+        Width="500"
+        Topmost="True" 
+        
+        Closing="DataWindow_Closing"  
+        StateChanged="MainWindow_OnStateChanged"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        MouseDoubleClick="Window_MouseDoubleClick"
+        
+        Title="JDock" >
+
+    <!--Width="{Binding ViewModelDC.WindowWidth}"-->
+    <!--Width="500"-->
+
+    <Window.RenderTransform>
+        <!-- 声明一个用于动画的 TranslateTransform -->
+        <TranslateTransform x:Name="RenderTransform" />
+    </Window.RenderTransform>
+
+    <Window.Resources>
+        <!-- 自定义 ContextMenu 的样式 -->
+        <Style TargetType="ContextMenu">
+            <Setter Property="Background" Value="#F4F4F4"/>
+            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Effect">
+                <!-- 添加阴影 -->
+                <Setter.Value>
+                    <DropShadowEffect ShadowDepth="5" BlurRadius="10" Opacity="0.3"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContextMenu">
+                        <Border CornerRadius="8"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <StackPanel IsItemsHost="True" Margin="5"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--自定义 MenuItem 的样式-->
+        <Style TargetType="MenuItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Margin" Value="2,1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Border CornerRadius="4"
+                                Background="{TemplateBinding Background}">
+                            <ContentPresenter Content="{TemplateBinding Header}"
+                                              HorizontalAlignment="Left"
+                                              VerticalAlignment="Center"
+                                              Margin="10,0"/>
+                        </Border>
+                        <!--Hover 效果-->
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <!--<Setter TargetName="border" Property="Background" Value="#E0E0E0"/>-->
+                                <Setter Property="Background" Value="#E0E0E0" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="0" 
+                      CornerRadius="0"
+                      CaptionHeight="0"/>
+    </WindowChrome.WindowChrome>
+
+
+    <Grid>
+
+        
+
+        <ItemsControl
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  x:Name="processList" 
+                  ItemsSource="{Binding Items}"
+                  BorderThickness="0"
+                      >
+
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <!--Margin="10"-->
+                    <StackPanel Orientation="Vertical" Margin="{Binding ItemMargin}" HorizontalAlignment="Center">
+                        <Button Name="processBut"
+                                Width="Auto" Height="Auto"
+                                Click="LstOnSelectionChanged" 
+                                MouseRightButtonUp="Window_MouseRightButtonUp"
+                                MouseEnter="HoverButton_MouseEnter" 
+                                MouseLeave="HoverButton_MouseLeave"
+                                >
+
+                            <Button.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1" CenterX="0.5" CenterY="0.5"/>
+                            </Button.RenderTransform>
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Trigger.EnterActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.3" Duration="0:0:0.5"/>
+                                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.3" Duration="0:0:0.5"/>
+                                                        <ThicknessAnimation Storyboard.TargetProperty="(Grid.Margin)"
+                                                            To="3,2,3,5" Duration="0:0:0.5" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </Trigger.EnterActions>
+                                            <Trigger.ExitActions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" Duration="0:0:0.3"/>
+                                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" Duration="0:0:0.3"/>
+                                                        <!-- TextBlock 恢复原始位置 -->
+                                                        <ThicknessAnimation Storyboard.TargetProperty="(Grid.Margin)"
+                                                            To="0,0,0,0" Duration="0:0:0.4" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </Trigger.ExitActions>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+
+                            <Button.Content>
+                                <Image Width="40" Height="40" Source="{Binding Icon}">
+
+                                </Image>
+                            </Button.Content>
+                        </Button>
+                        <TextBlock Text="{Binding InfoText}" 
+                               Foreground="White" 
+                               HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                               Width="{Binding ItemWidth}"
+                               Margin="0,1,0,0"
+                                   >
+                               <!--Width="45"-->
+                            <!--Margin="5,2,5,0"-->
+                        </TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+
+        </ItemsControl>
+    </Grid>
+
+</Window>
